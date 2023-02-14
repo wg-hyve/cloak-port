@@ -12,4 +12,9 @@ final class ProxyGuard implements ProxyInterface
     public function __construct(private GuardContract $guard)
     {
     }
+
+    public function getGuard(): GuardContract
+    {
+        return $this->guard;
+    }
 }
