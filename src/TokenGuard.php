@@ -7,6 +7,11 @@ use Illuminate\Contracts\Auth\Guard;
 
 class TokenGuard implements Guard, GuardContract
 {
+    public static function load(array $config): self
+    {
+        return new self();
+    }
+
     public function user()
     {
         return null;
