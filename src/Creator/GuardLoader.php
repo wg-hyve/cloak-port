@@ -13,12 +13,12 @@ class GuardLoader
     private static array $loaded = [];
     public static function load(array $config): ProxyGuard
     {
-        $guardName = count(array_intersect(config('cloak_n_passport')['keycloak_key_identifier'], array_keys(self::tokenPayload()))) > 0 ? 'keycloak' : 'passport';
+        $guardName = count(array_intersect(config('cloak_n_passport')['keycloak_key_identifier'], array_keys(self::tokenPayload()))) > 0 ? 'keycloak' : 'passport_client';
         $guard = GuardType::load($guardName)->loadFrom($config);
 
         self::$loaded[] = $guard->name();
 
-        if($guard->validate() === false) {
+        if($guard->validate(['request' => request()]) === false) {
             $guard = self::reload($config);
         }
 

@@ -10,7 +10,8 @@ return [
     ],
     'guards' => [
         'keycloak',
-        'passport',
+        'passport_client',
+        'passport_user',
         'default'
     ],
     'factory' => GuardType::class,

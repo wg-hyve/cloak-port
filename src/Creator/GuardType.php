@@ -11,29 +11,23 @@ use Laravel\Passport\ClientRepository;
 use Laravel\Passport\PassportUserProvider;
 use Laravel\Passport\TokenRepository;
 use League\OAuth2\Server\ResourceServer;
-use CloakPort\Passport\TokenGuard as PassportGuard;
+use CloakPort\Passport\TokenClientGuard as PassportClientGuard;
+use CloakPort\Passport\TokenUserGuard as PassportUserGuard;
 
 enum GuardType implements GuardTypeContract
 {
     case KEYCLOAK;
-    case PASSPORT;
+    case PASSPORT_CLIENT;
+    case PASSPORT_USER;
     case DEFAULT;
 
     public static function load(string $backend): self
     {
         return match(strtolower($backend)) {
             'keycloak' => GuardType::KEYCLOAK,
-            'passport' => GuardType::PASSPORT,
+            'passport_client' => GuardType::PASSPORT_CLIENT,
+            'passport_user' => GuardType::PASSPORT_USER,
             default => GuardType::DEFAULT
-        };
-    }
-
-    public function guardClass(): string
-    {
-        return match ($this) {
-            self::KEYCLOAK => KeycloakGuard::class,
-            self::PASSPORT => PassportGuard::class,
-            self::DEFAULT => DefaultGuard::class,
         };
     }
 
@@ -42,7 +36,16 @@ enum GuardType implements GuardTypeContract
         return match ($this) {
             self::KEYCLOAK => new KeycloakGuard(Auth::createUserProvider($config['provider']), request()),
 
-            self::PASSPORT => new PassportGuard(
+            self::PASSPORT_CLIENT => new PassportClientGuard(
+                app()->make(ResourceServer::class),
+                new PassportUserProvider(Auth::createUserProvider($config['provider']), $config['provider']),
+                app()->make(TokenRepository::class),
+                app()->make(ClientRepository::class),
+                app()->make('encrypter'),
+                app()->make('request')
+            ),
+
+            self::PASSPORT_USER => new PassportUserGuard(
                 app()->make(ResourceServer::class),
                 new PassportUserProvider(Auth::createUserProvider($config['provider']), $config['provider']),
                 app()->make(TokenRepository::class),
