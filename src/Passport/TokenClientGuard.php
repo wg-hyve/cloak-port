@@ -4,6 +4,7 @@ namespace CloakPort\Passport;
 
 use CloakPort\GuardContract;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Guards\TokenGuard as PassportTokenGuard;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\PassportUserProvider;
