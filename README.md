@@ -25,7 +25,7 @@ Passport User is a client login with a determined user. (password grant)
 
 ## Installation
 Require wg-hyve/cloak-port and add GitHub repository in your `composer.json`.
-```
+``` json
 {
     "require": {
         "php": "^8.1.0",
