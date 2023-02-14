@@ -107,7 +107,7 @@ enum GuardType implements GuardTypeContract
     public static function load(string $backend): self
     {
         return match(strtolower($backend)) {
-            'MY_GUARD' => GuardType::MY_GUARD,
+            'my_guard' => GuardType::MY_GUARD,
             // ...
             default => GuardType::DEFAULT
         };
@@ -116,9 +116,9 @@ enum GuardType implements GuardTypeContract
     public function loadFrom(array $config): GuardContract
     {
         return match ($this) {
-            self::MY_GUARD => new MyGuard(...)
+            self::MY_GUARD => MyGuard::load($config),
             // ...
-            self::DEFAULT => new DefaultGuard()
+            self::DEFAULT => DefaultGuard::load($config)
         };
     }
 }
@@ -137,6 +137,11 @@ use Illuminate\Contracts\Auth\Guard;
 
 class TokenGuard extends ParentTokenGuard implements Guard, GuardContract
 {
+    public static function load(array $config): self
+    {
+        return new self();
+    }
+    
     public function validate(array $credentials = [])
     {
         // any magic to valid your JWT
