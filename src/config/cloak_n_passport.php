@@ -9,9 +9,9 @@ return [
         'resource_access'
     ],
     'guards' => [
-        'keycloak',
-        'passport_client',
         'passport_user',
+        'passport_client',
+        'keycloak',
         'default'
     ],
     'factory' => GuardType::class,
