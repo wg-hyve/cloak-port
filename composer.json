@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ClockPort\\": "src/"
+            "CloakPort\\": "src/"
         }
     },
     "autoload-dev": {},
