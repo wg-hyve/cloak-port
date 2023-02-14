@@ -1,5 +1,5 @@
 {
-    "name": "wg-hyve/clock-port",
+    "name": "wg-hyve/cloak-port",
     "description": "Guard; Checks JWTs against different guard types; default keycloak & passport",
     "keywords": [
         "laravel",
