@@ -13,7 +13,7 @@ class GuardLoader
     private static array $loaded = [];
     public static function load(array $config): ProxyGuard
     {
-        $guardName = count(array_intersect(config('cloak_n_passport')['keycloak_key_identifier'], array_keys(self::tokenPayload()))) > 0 ? 'keycloak' : 'passport_client';
+        $guardName = count(array_intersect(config('cloak_n_passport')['keycloak_key_identifier'], array_keys(self::tokenPayload()))) > 0 ? 'keycloak' : 'passport_user';
         $guard = GuardType::load($guardName)->loadFrom($config);
 
         self::$loaded[] = $guard->name();
@@ -53,8 +53,12 @@ class GuardLoader
 
     private static function tokenPayload(): array
     {
-        [$header, $payload, $signature] = explode('.', str_replace('Bearer', '', request()->header('Authorization')));
+        [$header, $payload, $signature] = explode('.', str_replace('Bearer', '', request()->header('Authorization', '..')));
 
-        return json_decode(base64_decode($payload), true);
+        if($payload) {
+            return json_decode(base64_decode($payload), true);
+        }
+        
+        abort(401, 'No valid Bearer token in Authorization header');
     }
 }
