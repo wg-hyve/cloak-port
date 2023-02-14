@@ -5,6 +5,9 @@ namespace CloakPort\Passport;
 use CloakPort\GuardContract;
 use Illuminate\Contracts\Auth\Guard;
 use Laravel\Passport\Guards\TokenGuard as PassportTokenGuard;
+use Laravel\Passport\ClientRepository;
+use Laravel\Passport\PassportUserProvider;
+use Laravel\Passport\TokenRepository;
 use League\OAuth2\Server\ResourceServer;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
@@ -12,6 +15,18 @@ use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 class TokenClientGuard extends PassportTokenGuard implements Guard, GuardContract
 {
     protected mixed $token = null;
+
+    public static function load(array $config): self
+    {
+        return new self(
+            app()->make(ResourceServer::class),
+            new PassportUserProvider(Auth::createUserProvider($config['provider']), $config['provider']),
+            app()->make(TokenRepository::class),
+            app()->make(ClientRepository::class),
+            app()->make('encrypter'),
+            app()->make('request')
+        );
+    }
 
     public function validate(array $credentials = [])
     {
