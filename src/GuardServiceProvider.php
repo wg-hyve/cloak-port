@@ -12,9 +12,9 @@ class GuardServiceProvider extends ServiceProvider
     {
         $this->publishes(
             [
-                __DIR__ . '/../config/cloak_n_passport.php' => app()->configPath('cloak_n_passport.php'),
+                __DIR__ . '/config/cloak_n_passport.php' => config_path('cloak_n_passport.php'),
             ],
-            'config'
+            'cloak-port-config'
         );
 
         $this->mergeConfigFrom(__DIR__ . '/config/cloak_n_passport.php', 'cloak_n_passport');
