@@ -56,6 +56,36 @@ Install Passport and Keycloak packages. It should work out of the box.
 You still can extend the behavior with your own `GuardType`. Make sure you implement `GuardTypeContract`.
 You are able to add your own Guards if you add a new `GuardType`.
 
+### Define CloakPort in auth config & routes
+in your `auth.php` file:
+```php
+<?php
+
+return [
+    // ...
+    'guards' => [
+        'cloak_n_dagger' => [
+            'driver' => 'keycloak_passport',
+            'provider' => 'users',
+        ],
+        // ...
+    ],
+    // ...
+];
+```
+
+in your `routes/api.php`:
+```php
+<?php
+
+use App\Http\Controllers\AnyController;
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('v1')->middleware(['auth:cloak_n_dagger'])->group(function () {
+  Route::get('/any-route', [AnyController::class, 'index']);
+});
+```
+
 ## Config
 
 ### keycloak_key_identifier
