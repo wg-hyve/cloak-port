@@ -19,7 +19,7 @@ class TokenGuard implements Guard, GuardContract
 
     public function validate(array $credentials = [])
     {
-        return true;
+        return false;
     }
 
     public function id()

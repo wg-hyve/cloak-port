@@ -11,18 +11,24 @@ class GuardLoader
     use HasMagicCall;
 
     private static array $loaded = [];
+    private static ?ProxyGuard $guard = null;
+
     public static function load(array $config): ProxyGuard
     {
-        $guardName = count(array_intersect(config('cloak_n_passport')['keycloak_key_identifier'], array_keys(self::tokenPayload()))) > 0 ? 'keycloak' : 'passport_user';
-        $guard = GuardType::load($guardName)->loadFrom($config);
+        if(self::$guard === null) {
+            $guardName = count(array_intersect(config('cloak_n_passport')['keycloak_key_identifier'], array_keys(self::tokenPayload()))) > 0 ? 'keycloak' : 'passport_user';
+            $guard = GuardType::load($guardName)->loadFrom($config);
 
-        self::$loaded[] = $guard->name();
+            self::$loaded[] = $guard->name();
 
-        if($guard->validate(['request' => request()]) === false) {
-            $guard = self::reload($config);
+            if($guard->validate(['request' => request()]) === false) {
+                $guard = self::reload($config);
+            }
+
+            self::$guard = new ProxyGuard($guard);
         }
 
-        return new ProxyGuard($guard);
+        return self::$guard;
     }
 
     public static function reload(array $config): ?GuardContract
@@ -41,7 +47,7 @@ class GuardLoader
 
                 self::$loaded[] = $guard->name();
 
-                if($guard->validate()) {
+                if($guard->validate() === true) {
                     $validGuard = $guard;
                     break;
                 }
@@ -58,7 +64,7 @@ class GuardLoader
         if($payload) {
             return json_decode(base64_decode($payload), true);
         }
-        
+
         abort(401, 'No valid Bearer token in Authorization header');
     }
 }
