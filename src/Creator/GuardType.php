@@ -16,7 +16,7 @@ enum GuardType implements GuardTypeContract
     case PASSPORT_USER;
     case DEFAULT;
 
-    public static function load(string $backend): self
+    public static function load(string $backend): GuardTypeContract
     {
         return match(strtolower($backend)) {
             'keycloak' => GuardType::KEYCLOAK,

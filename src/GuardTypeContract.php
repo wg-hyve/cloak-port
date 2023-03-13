@@ -6,7 +6,7 @@ use CloakPort\Creator\GuardType;
 
 interface GuardTypeContract
 {
-    public static function load(string $backend): GuardType;
+    public static function load(string $backend): GuardTypeContract;
 
     public function loadFrom(array $config): GuardContract;
 }
