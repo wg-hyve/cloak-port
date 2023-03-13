@@ -56,7 +56,13 @@ class TokenGuard implements Guard, GuardContract
     {
         return true;
     }
+
     public function scopes(): array
+    {
+        return [];
+    }
+
+    public function claims(): array
     {
         return [];
     }
