@@ -12,5 +12,7 @@ interface GuardContract
 
     public function hasScope(string|array $scope): bool;
 
+    public function claims(): array;
+
     public function name(): string;
 }

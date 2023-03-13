@@ -14,6 +14,11 @@ class TokenGuard extends KeycloakGuard implements Guard, GuardContract
         return new self(Auth::createUserProvider($config['provider']), request());
     }
 
+    public function claims(): array
+    {
+        return (array) $this->token();
+    }
+
     public function name(): string
     {
         return 'keycloak';

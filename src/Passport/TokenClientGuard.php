@@ -70,6 +70,11 @@ class TokenClientGuard extends PassportTokenGuard implements Guard, GuardContrac
         return true;
     }
 
+    public function claims(): array
+    {
+        return [];
+    }
+
     public function name(): string
     {
         return 'passport_client';

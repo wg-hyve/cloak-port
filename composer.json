@@ -6,7 +6,7 @@
         "keycloak",
         "passport"
     ],
-    "homepage": "",
+    "homepage": "https://github.com/wg-hyve/cloak-port",
     "license": "MIT",
     "authors": [
         {
