@@ -2,6 +2,8 @@
 
 namespace CloakPort;
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 

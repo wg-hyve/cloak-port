@@ -3,6 +3,7 @@
 namespace CloakPort\Passport;
 
 use CloakPort\GuardContract;
+use CloakPort\Traits\Decode;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\ClientRepository;
@@ -13,6 +14,8 @@ use League\OAuth2\Server\ResourceServer;
 
 class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
 {
+    use Decode;
+
     public static function load(array $config): self
     {
         return new self(
@@ -23,6 +26,19 @@ class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
             app()->make('encrypter'),
             app()->make('request')
         );
+    }
+    public function validate(array $credentials = [])
+    {
+        $this->decode();
+
+        return ! is_null((new static(
+            $this->server,
+            $this->provider,
+            $this->tokens,
+            $this->clients,
+            $this->encrypter,
+            $credentials['request'],
+        ))->user());
     }
 
     public function roles($useGlobal = true): array
@@ -46,7 +62,7 @@ class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
 
     public function claims(): array
     {
-        return [];
+        return $this->getClaims();
     }
 
     public function name(): string
