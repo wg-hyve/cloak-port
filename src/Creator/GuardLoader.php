@@ -6,6 +6,8 @@ use CloakPort\Creator\Traits\HasMagicCall;
 use CloakPort\GuardContract;
 use CloakPort\GuardTypeContract;
 
+use Exception;
+
 class GuardLoader
 {
     use HasMagicCall;
@@ -17,7 +19,7 @@ class GuardLoader
     {
         if(self::$guard === null) {
             $guardName = count(array_intersect(config('cloak_n_passport')['keycloak_key_identifier'], array_keys(self::tokenPayload()))) > 0 ? 'keycloak' : 'passport_user';
-            $guard = GuardType::load($guardName)->loadFrom($config);
+            $guard = self::getGuard($guardName, $config);
 
             self::$loaded[] = $guard->name();
 
@@ -66,5 +68,18 @@ class GuardLoader
         }
 
         abort(401, 'No valid Bearer token in Authorization header');
+    }
+
+    private static function getGuard($name, $config): GuardContract
+    {
+        $gardTypeClass = config('cloak_n_passport')['factory'];
+
+        try {
+            $guard = $gardTypeClass::load($name)->loadFrom($config);
+        }catch(Exception $e) {
+            $guard = $gardTypeClass::load('none')->loadFrom($config);
+        }
+
+        return $guard;
     }
 }
