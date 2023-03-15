@@ -41,7 +41,7 @@ class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
         ))->user());
     }
 
-    public function roles($useGlobal = true): array
+    public function roles(bool $useGlobal = true): array
     {
         return [];
     }

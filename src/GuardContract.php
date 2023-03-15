@@ -6,7 +6,7 @@ interface GuardContract
 {
     public static function load(array $config): self;
 
-    public function roles($useGlobal = true): array;
+    public function roles(bool $useGlobal = true): array;
 
     public function hasRole(array $resource, string $role): bool;
 

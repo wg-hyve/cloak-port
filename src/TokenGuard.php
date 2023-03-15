@@ -54,7 +54,7 @@ class TokenGuard implements Guard, GuardContract
         return false;
     }
 
-    public function roles($useGlobal = true): array
+    public function roles(bool $useGlobal = true): array
     {
         return [];
     }

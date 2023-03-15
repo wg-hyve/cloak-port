@@ -62,7 +62,7 @@ class TokenClientGuard extends PassportTokenGuard implements Guard, GuardContrac
         return $this->token !== null;
     }
 
-    public function roles($useGlobal = true): array
+    public function roles(bool $useGlobal = true): array
     {
         return [];
     }
