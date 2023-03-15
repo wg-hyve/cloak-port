@@ -8,7 +8,7 @@ interface GuardContract
 
     public function roles(bool $useGlobal = true): array;
 
-    public function hasRole(array $resource, string $role): bool;
+    public function hasRole(array|string $roles): bool;
 
     public function scopes(): array;
 

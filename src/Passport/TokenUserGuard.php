@@ -46,9 +46,9 @@ class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
         return [];
     }
 
-    public function hasRole(array $resource, string $role): bool
+    public function hasRole(array|string $roles): bool
     {
-        return true;
+        return false;
     }
     public function scopes(): array
     {
@@ -57,7 +57,7 @@ class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
 
     public function hasScope(string|array $scope): bool
     {
-        return true;
+        return false;
     }
 
     public function claims(): array
