@@ -37,7 +37,7 @@ class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
             $this->tokens,
             $this->clients,
             $this->encrypter,
-            $credentials['request'],
+            $credentials['request'] ?? app()->make('request'),
         ))->user());
     }
 
