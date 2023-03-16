@@ -5,6 +5,7 @@ namespace CloakPort\Traits;
 use CloakPort\Token;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Illuminate\Support\Arr;
 
 trait Decode
 {
