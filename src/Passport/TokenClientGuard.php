@@ -5,6 +5,7 @@ namespace CloakPort\Passport;
 use CloakPort\GuardContract;
 use CloakPort\Traits\Decode;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Guards\TokenGuard as PassportTokenGuard;
 use Laravel\Passport\ClientRepository;
@@ -20,10 +21,14 @@ class TokenClientGuard extends PassportTokenGuard implements Guard, GuardContrac
     use Decode;
 
     protected mixed $token = null;
+    protected array $config = [];
 
+    /**
+     * @throws BindingResolutionException
+     */
     public static function load(array $config): self
     {
-        return new self(
+        $guard = new self(
             app()->make(ResourceServer::class),
             new PassportUserProvider(Auth::createUserProvider($config['provider']), $config['provider']),
             app()->make(TokenRepository::class),
@@ -31,6 +36,17 @@ class TokenClientGuard extends PassportTokenGuard implements Guard, GuardContrac
             app()->make('encrypter'),
             app()->make('request')
         );
+
+        $guard->setConfig($config);
+
+        return $guard;
+    }
+
+    public function setConfig(array $config): self
+    {
+        $this->config = $config;
+
+        return $this;
     }
 
     public function validate(array $credentials = [])
@@ -42,7 +58,7 @@ class TokenClientGuard extends PassportTokenGuard implements Guard, GuardContrac
             new Psr17Factory,
             new Psr17Factory,
             new Psr17Factory
-        ))->createRequest(request());
+        ))->createRequest($this->config['request']);
 
         try {
             $psr = $this->server->validateAuthenticatedRequest($psr);

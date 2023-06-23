@@ -18,7 +18,7 @@ trait Decode
         return str_replace(
             'Bearer ',
             '',
-            request()->header('authorization') ?: Arr::get(getallheaders(), 'Authorization')
+            request()->header('authorization') ?: Arr::get(getallheaders(), 'Authorization') ?? $this->config['request']->header('authorization')
         );
     }
 
