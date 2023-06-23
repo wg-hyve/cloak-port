@@ -7,6 +7,7 @@ use CloakPort\GuardContract;
 use CloakPort\GuardTypeContract;
 
 use Exception;
+use Illuminate\Http\Request;
 
 class GuardLoader
 {
@@ -14,16 +15,19 @@ class GuardLoader
 
     private static array $loaded = [];
     private static ?ProxyGuard $guard = null;
+    private static ?Request $request = null;
 
     public static function load(array $config): ProxyGuard
     {
+        self::$request = $config['request'];
+
         if(self::$guard === null) {
             $guardName = count(array_intersect(config('cloak_n_passport')['keycloak_key_identifier'], array_keys(self::tokenPayload()))) > 0 ? 'keycloak' : 'passport_user';
             $guard = self::getGuard($guardName, $config);
 
             self::$loaded[] = $guard->name();
 
-            if($guard->validate(['request' => request()]) === false) {
+            if($guard->validate($config) === false) {
                 $guard = self::reload($config);
             }
 
@@ -61,7 +65,7 @@ class GuardLoader
 
     private static function tokenPayload(): array
     {
-        [$header, $payload, $signature] = explode('.', str_replace('Bearer', '', request()->header('Authorization', '..')));
+        [$header, $payload, $signature] = explode('.', str_replace('Bearer', '', self::$request->header('Authorization', '..')));
 
         if($payload) {
             return json_decode(base64_decode($payload), true);
