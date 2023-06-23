@@ -1,12 +1,17 @@
 <?php
 
-namespace KeycloakGuard\Tests\Models;
+namespace ClockPort\Tests\Models;
 
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements UserProvider
 {
+    protected $fillable = [
+        'id',
+        'username',
+    ];
+
     public function retrieveById($identifier)
     {
     }

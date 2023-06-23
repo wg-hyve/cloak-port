@@ -1,0 +1,8 @@
+{
+  "aud": "d03a0c03-354e-43b7-a7f2-aae4ed39a190",
+  "jti": "97fef3a83ee60e89ec7e84ca3a6c8bfd4d5c846c25103631fae4ac4e911cc0e20593bdb8d743de52",
+  "iat": 1687550399.461483,
+  "nbf": 1687550399.461485,
+  "sub": "",
+  "scopes": []
+}

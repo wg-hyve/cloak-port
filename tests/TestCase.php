@@ -8,13 +8,22 @@ use CloakPort\Creator\GuardLoader;
 use CloakPort\Creator\GuardType;
 use CloakPort\Creator\ProxyGuard;
 use CloakPort\GuardServiceProvider;
+use ClockPort\Tests\Models\User;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use KeycloakGuard\Exceptions\InvalidTokenException;
 use KeycloakGuard\Exceptions\ResourceAccessNotAllowedException;
 use KeycloakGuard\KeycloakGuard;
-use KeycloakGuard\Tests\Models\User;
 use ClockPort\Tests\Traits\HasPayload;
+use Laravel\Passport\Bridge\AccessTokenRepository;
+use Laravel\Passport\Passport;
+use Laravel\Passport\Token;
+use Laravel\Passport\Client;
+use League\OAuth2\Server\CryptKey;
+use League\OAuth2\Server\ResourceServer;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -26,16 +35,24 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         $this->app->setBasePath(__DIR__);
+
+        $this->setUpDatabase($this->app);
+        $this->seedDb();
     }
 
     /**
      * Define environment setup.
      *
-     * @param  Application  $app
+     * @param Application $app
      * @return void
+     * @throws BindingResolutionException
      */
     protected function getEnvironmentSetUp($app): void
     {
+        $app['config']->set('app.key', 'base64:DLrHy+DjRdWYWjVU4meO/6yOqWaPVPmxlWRWoFLnxZY=');
+        $app['config']->set('passport.public_key', $this->load('keys/passport-public.key'));
+        $app['config']->set('passport.private_key', $this->load('keys/passport-private.key'));
+
         $app['config']->set('keycloak.token_principal_attribute', 'azp');
         $app['config']->set('keycloak.realm_public_key', $this->load('keys/public_no_wrap.key'));
         $app['config']->set('keycloak.allowed_resources', 'client-role-test');
@@ -63,6 +80,13 @@ abstract class TestCase extends BaseTestCase
 //            'provider' => 'users'
 //        ]);
 
+        $app->singleton(ResourceServer::class, function ($container) {
+            return new ResourceServer(
+                app()->make(AccessTokenRepository::class),
+                $this->makeCryptKey('public')
+            );
+        });
+
 //        Http::fake(['keycloak.dev/auth/realms/testing' => Http::response(['public_key' => $this->load('keys/public_no_wrap.key')]),]);
 //        Http::fake(['keycloak.dev/auth/realms/nope' => Http::response(['public_key' => null]), 404]);
     }
@@ -73,6 +97,32 @@ abstract class TestCase extends BaseTestCase
 //        Route::any('/acme/bar', [AcmeController::class, 'bar']);
 
         return [GuardServiceProvider::class,];
+    }
+
+    protected function setUpDatabase(Application $app)
+    {
+        $app['db']->connection()->getSchemaBuilder()->create('oauth_access_tokens', function (Blueprint $table) {
+            $table->string('id');
+            $table->timestamps();
+        });
+
+        $app['db']->connection()->getSchemaBuilder()->create('oauth_clients', function (Blueprint $table) {
+            $table->uuid('id');
+            $table->timestamps();
+        });
+
+        $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('username');
+            $table->timestamps();
+        });
+    }
+
+    protected function seedDb()
+    {
+        Token::create(['id' => '97fef3a83ee60e89ec7e84ca3a6c8bfd4d5c846c25103631fae4ac4e911cc0e20593bdb8d743de52']);
+        Client::create(['id' => 'd03a0c03-354e-43b7-a7f2-aae4ed39a190']);
+        User::create(['username' => 'John Doe']);
     }
 
     protected function withKeycloakToken(): static
@@ -93,8 +143,6 @@ abstract class TestCase extends BaseTestCase
     {
         $req = new Request();
 
-//        var_dump($this->load('tokens/access_token'));
-
         $req->headers->set('Authorization', sprintf('Bearer %s', $this->load('tokens/access_token')));
 
         $config = [
@@ -104,5 +152,39 @@ abstract class TestCase extends BaseTestCase
         ];
 
         return GuardLoader::load($config);
+    }
+
+    protected function getPassportClientGuard(): ProxyGuard
+    {
+        $req = new Request();
+
+//        $req->initialize(server: ['REQUEST_URI' => 'example.com']);
+
+        $req->headers->set('Authorization', sprintf('Bearer %s', $this->load('tokens/access_token_passport_client')));
+        $req->headers->set('HOST', 'example.com');
+
+//        $uri = $req->server->get('QUERY_STRING', '');
+//        $uri = $req->getSchemeAndHttpHost().$req->getBaseUrl().$req->getPathInfo().('' !== $uri ? '?'.$uri : '');
+//
+//        var_dump($req->bearerToken());
+
+        $config = [
+            'driver' => 'keycloak_passport',
+            'provider' => 'users',
+            'request' => $req
+        ];
+
+        return GuardLoader::load($config);
+    }
+
+    protected function makeCryptKey($type): CryptKey
+    {
+        $key = str_replace('\\n', "\n", config('passport.'.$type.'_key') ?? '');
+
+        if (! $key) {
+            $key = 'file://'.Passport::keyPath('oauth-'.$type.'.key');
+        }
+
+        return new CryptKey($key, null, false);
     }
 }
