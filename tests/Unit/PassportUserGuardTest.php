@@ -3,7 +3,6 @@
 namespace ClockPort\Tests\Unit;
 
 use CloakPort\Creator\Exceptions\ProxyMethodNotFound;
-use CloakPort\Passport\TokenClientGuard;
 use CloakPort\Passport\TokenUserGuard;
 use ClockPort\Tests\Models\User;
 use ClockPort\Tests\TestCase;
@@ -36,6 +35,11 @@ class PassportUserGuardTest extends TestCase
     public function test_guard_has_scopes(): void
     {
         $this->assertEquals([], $this->getPassportUserGuard()->scopes());
+    }
+
+    public function test_guard_has_no_scope(): void
+    {
+        $this->assertFalse($this->getPassportUserGuard()->hasScope('nope'));
     }
 
     public function test_guard_can_validate(): void
