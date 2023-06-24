@@ -80,16 +80,10 @@ abstract class TestCase extends BaseTestCase
                 $this->makeCryptKey('public')
             );
         });
-
-//        Http::fake(['keycloak.dev/auth/realms/testing' => Http::response(['public_key' => $this->load('keys/public_no_wrap.key')]),]);
-//        Http::fake(['keycloak.dev/auth/realms/nope' => Http::response(['public_key' => null]), 404]);
     }
 
     protected function getPackageProviders($app): array
     {
-//        Route::any('/acme/foo', [AcmeController::class, 'foo'])->middleware(['auth:cloak']);
-//        Route::any('/acme/bar', [AcmeController::class, 'bar']);
-
         return [GuardServiceProvider::class,];
     }
 
@@ -171,7 +165,23 @@ abstract class TestCase extends BaseTestCase
         $req = new Request();
 
         $req->headers->set('Authorization', sprintf('Bearer %s', $this->load('tokens/access_token_passport_user')));
-        $req->headers->set('HOST', 'example.com1');
+        $req->headers->set('HOST', 'example.com');
+
+        $config = [
+            'driver' => 'keycloak_passport',
+            'provider' => 'users',
+            'request' => $req
+        ];
+
+        return GuardLoader::load($config);
+    }
+
+    protected function getDefaultGuard(): ProxyGuard
+    {
+        $req = new Request();
+
+        $req->headers->set('Authorization', sprintf('Bearer %s', $this->load('tokens/access_token_default_guard')));
+        $req->headers->set('HOST', 'example.com');
 
         $config = [
             'driver' => 'keycloak_passport',
