@@ -11,12 +11,12 @@ class PassportClientGuardTest extends TestCase
 {
     use HasPayload;
 
-    public function test_guard_is_keycloak_guard(): void
+    public function test_guard_is_passport_client_guard(): void
     {
         $this->assertInstanceOf(TokenClientGuard::class, $this->getPassportClientGuard()->getGuard());
     }
 
-    public function test_guard_name_is_keycloak(): void
+    public function test_guard_name_is_passport_client(): void
     {
         $this->assertEquals('passport_client', $this->getPassportClientGuard()->name());
     }

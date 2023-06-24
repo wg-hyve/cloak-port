@@ -72,13 +72,7 @@ abstract class TestCase extends BaseTestCase
         ]);
         $app['config']->set('cloak_n_passport.factory', GuardType::class);
 
-//        $app['config']->set('auth.defaults.guard', 'api');
-//        $app['config']->set('auth.providers.users.model', User::class);
-
-//        $app['config']->set('auth.guards.cloak', [
-//            'driver' => 'keycloak',
-//            'provider' => 'users'
-//        ]);
+        $app['config']->set('auth.providers.users.model', User::class);
 
         $app->singleton(ResourceServer::class, function ($container) {
             return new ResourceServer(
@@ -121,7 +115,9 @@ abstract class TestCase extends BaseTestCase
     protected function seedDb()
     {
         Token::create(['id' => '97fef3a83ee60e89ec7e84ca3a6c8bfd4d5c846c25103631fae4ac4e911cc0e20593bdb8d743de52']);
+        Token::create(['id' => '96e6ed779b7392efcd38e5a2d59e252b5584df981743c0a2a0e7f96ffb0216a77f08b19ce8787d11']);
         Client::create(['id' => 'd03a0c03-354e-43b7-a7f2-aae4ed39a190']);
+        Client::create(['id' => 'efc58327-30d4-472c-996d-7901f8fdeb69']);
         User::create(['username' => 'John Doe']);
     }
 
@@ -158,15 +154,24 @@ abstract class TestCase extends BaseTestCase
     {
         $req = new Request();
 
-//        $req->initialize(server: ['REQUEST_URI' => 'example.com']);
-
         $req->headers->set('Authorization', sprintf('Bearer %s', $this->load('tokens/access_token_passport_client')));
         $req->headers->set('HOST', 'example.com');
 
-//        $uri = $req->server->get('QUERY_STRING', '');
-//        $uri = $req->getSchemeAndHttpHost().$req->getBaseUrl().$req->getPathInfo().('' !== $uri ? '?'.$uri : '');
-//
-//        var_dump($req->bearerToken());
+        $config = [
+            'driver' => 'keycloak_passport',
+            'provider' => 'users',
+            'request' => $req
+        ];
+
+        return GuardLoader::load($config);
+    }
+
+    protected function getPassportUserGuard(): ProxyGuard
+    {
+        $req = new Request();
+
+        $req->headers->set('Authorization', sprintf('Bearer %s', $this->load('tokens/access_token_passport_user')));
+        $req->headers->set('HOST', 'example.com1');
 
         $config = [
             'driver' => 'keycloak_passport',

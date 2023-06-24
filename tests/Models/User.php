@@ -4,9 +4,13 @@ namespace ClockPort\Tests\Models;
 
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable implements UserProvider
 {
+
+    use HasApiTokens;
+
     protected $fillable = [
         'id',
         'username',
