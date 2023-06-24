@@ -6,8 +6,11 @@ use CloakPort\Creator\Traits\HasMagicCall;
 use CloakPort\GuardContract;
 use CloakPort\GuardTypeContract;
 
+use CloakPort\TokenGuard as DefaultTokenGuard;
 use Exception;
 use Illuminate\Http\Request;
+use KeycloakGuard\Exceptions\InvalidTokenException;
+use KeycloakGuard\Exceptions\ResourceAccessNotAllowedException;
 
 class GuardLoader
 {
@@ -37,6 +40,10 @@ class GuardLoader
         return self::$guard;
     }
 
+    /**
+     * @throws ResourceAccessNotAllowedException
+     * @throws InvalidTokenException
+     */
     public static function reload(array $config): ?GuardContract
     {
         $validGuard = null;
@@ -58,6 +65,10 @@ class GuardLoader
                     break;
                 }
             }
+        }
+
+        if($validGuard === null) {
+            $validGuard = DefaultTokenGuard::load($config);
         }
 
         return $validGuard;
