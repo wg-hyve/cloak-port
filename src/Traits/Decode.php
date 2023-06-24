@@ -24,16 +24,18 @@ trait Decode
 
     public function decode(): ?array
     {
-        $tks = explode('.', $this->bearer());
-        [$headb64, $bodyb64, $sigb64] = $tks;
+        if ($token = $this->bearer()) {
+            $tks = explode('.', $token);
+            [$headb64, $bodyb64, $sigb64] = $tks;
 
-        $this->loadedToken = new Token(
-            json_decode(JWT::urlsafeB64Decode($headb64), true, 512, JSON_BIGINT_AS_STRING),
-            json_decode(JWT::urlsafeB64Decode($bodyb64), true, 512, JSON_BIGINT_AS_STRING),
-            JWT::urlsafeB64Decode($sigb64)
-        );
+            $this->loadedToken = new Token(
+                json_decode(JWT::urlsafeB64Decode($headb64), true, 512, JSON_BIGINT_AS_STRING),
+                json_decode(JWT::urlsafeB64Decode($bodyb64), true, 512, JSON_BIGINT_AS_STRING),
+                JWT::urlsafeB64Decode($sigb64)
+            );
 
-        $this->decodedToken = $this->loadedToken->payload;
+            $this->decodedToken = $this->loadedToken->payload;
+        }
 
         return $this->decodedToken;
     }
