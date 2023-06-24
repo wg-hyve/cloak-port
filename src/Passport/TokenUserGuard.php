@@ -30,7 +30,7 @@ class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
             app()->make(TokenRepository::class),
             app()->make(ClientRepository::class),
             app()->make('encrypter'),
-            $config['request']
+            app()->make('request')
         );
 
         $guard->setConfig($config);
@@ -49,14 +49,16 @@ class TokenUserGuard extends PassportTokenGuard implements Guard, GuardContract
     {
         $this->decode();
 
-        return ! is_null((new static(
+        $this->user = (new static(
             $this->server,
             $this->provider,
             $this->tokens,
             $this->clients,
             $this->encrypter,
-            $credentials['request'] ?? app()->make('request'),
-        ))->user());
+            $this->config['request'],
+        ))->user();
+
+        return !is_null($this->user);
     }
 
     public function roles(bool $useGlobal = true): array
