@@ -4,10 +4,12 @@ namespace CloakPort\Creator;
 
 use CloakPort\GuardContract;
 use CloakPort\GuardTypeContract;
-use CloakPort\TokenGuard as DefaultGuard;
 use CloakPort\Keycloak\TokenGuard as KeycloakGuard;
 use CloakPort\Passport\TokenClientGuard as PassportClientGuard;
+use CloakPort\TokenGuard as DefaultGuard;
 use CloakPort\Passport\TokenUserGuard as PassportUserGuard;
+use KeycloakGuard\Exceptions\InvalidTokenException;
+use KeycloakGuard\Exceptions\ResourceAccessNotAllowedException;
 
 enum GuardType implements GuardTypeContract
 {
@@ -26,6 +28,10 @@ enum GuardType implements GuardTypeContract
         };
     }
 
+    /**
+     * @throws InvalidTokenException
+     * @throws ResourceAccessNotAllowedException
+     */
     public function loadFrom(array $config): GuardContract
     {
         return match ($this) {

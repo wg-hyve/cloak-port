@@ -1,0 +1,9 @@
+{
+  "iat": 1687356950,
+  "jti": "4d52ff7e-15fe-42da-af3b-d5400bc6abfc",
+  "iss": "https://example.com",
+  "sub": "a6c65135-acd8-4b8f-aeb7-9803a61d2cf0",
+  "typ": "Bearer",
+  "azp": "client-test",
+  "scope": ""
+}

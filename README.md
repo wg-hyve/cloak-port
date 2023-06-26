@@ -156,6 +156,7 @@ enum GuardType implements GuardTypeContract
 
 ### TokenGuard
 Overwrite any other public method like `user` if needed.
+Provide a setConfig method and a local $config attribute in your guard.
 ``` php
 <?php
 
@@ -167,9 +168,18 @@ use Illuminate\Contracts\Auth\Guard;
 
 class TokenGuard extends ParentTokenGuard implements Guard, GuardContract
 {
+    protected array $config = [];
+    
     public static function load(array $config): self
     {
         return new self();
+    }
+    
+    public function setConfig(array $config): self
+    {
+        $this->config = $config;
+
+        return $this;
     }
     
     public function validate(array $credentials = [])

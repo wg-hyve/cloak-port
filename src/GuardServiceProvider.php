@@ -23,6 +23,9 @@ class GuardServiceProvider extends ServiceProvider
     public function register()
     {
         Auth::extend('keycloak_passport', function ($app, $name, array $config) {
+
+            $config['request'] = request();
+
             return GuardLoader::load($config);
         });
     }
