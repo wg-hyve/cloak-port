@@ -25,29 +25,10 @@ Passport User is a client login with a determined user. (password grant)
 
 ## Installation
 Require wg-hyve/cloak-port and add GitHub repository in your `composer.json`.
-``` json
-{
-    "require": {
-        "php": "^8.1.0",
-        "laravel/passport": "^11.6",
-        "robsontenorio/laravel-keycloak-guard": "dev-wg",
-        "wg-hyve/cloak-port": "dev-main",
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/wg-hyve/laravel-keycloak-guard.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/wg-hyve/cloak-port.git"
-        }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true
-}
+
+```bash
+composer require wg-hyve/cloak-port
 ```
-`composer install`
 
 Publish config if you want to overwrite it. `php artisan vendor:publish --tag=cloak-port-config`
 
