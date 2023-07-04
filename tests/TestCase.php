@@ -57,6 +57,7 @@ abstract class TestCase extends BaseTestCase
         $app['config']->set('keycloak.realm_public_key', $this->load('keys/public_no_wrap.key'));
         $app['config']->set('keycloak.allowed_resources', 'client-role-test');
         $app['config']->set('keycloak.service_role', 'client-role-test');
+        $app['config']->set('keycloak.provide_user', false);
         $app['config']->set('keycloak.ignore_resources_validation', true);
 
         $app['config']->set('cloak_n_passport.keycloak_key_identifier', [
@@ -134,7 +135,8 @@ abstract class TestCase extends BaseTestCase
         $req = new Request();
 
         $req->headers->set('Authorization', sprintf('Bearer %s', $this->load('tokens/access_token')));
-
+        $req->headers->set('HOST', 'example.com');
+        
         $config = [
             'driver' => 'keycloak_passport',
             'provider' => 'users',
@@ -156,7 +158,7 @@ abstract class TestCase extends BaseTestCase
             'provider' => 'users',
             'request' => $req
         ];
-
+        
         return GuardLoader::load($config);
     }
 

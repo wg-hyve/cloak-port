@@ -11,7 +11,7 @@ class GuardLoaderTest extends TestCase
     use HasPayload;
 
     public function test_guard_loader_initialises_proxy_guard(): void
-    {
+    {    
         $this->assertInstanceOf(ProxyGuard::class, $this->getKeycloakGuard());
     }
 }
