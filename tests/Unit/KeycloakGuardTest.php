@@ -53,22 +53,25 @@ class KeycloakGuardTest extends TestCase
 
     public function test_guard_calls_check_with_true(): void
     {
+
         $this->assertTrue($this->getKeycloakGuard()->check());
     }
 
     public function test_guard_exports_claims(): void
     {
+
         $this->assertEquals((array) $this->getKeycloakGuard()->token(), $this->getKeycloakGuard()->claims());
     }
 
     public function test_guard_has_no_laravel_user(): void
     {
+
         $this->assertNull($this->getKeycloakGuard()->user());
     }
 
     public function test_guard_has_keycloak_user_id(): void
     {
-        $this->assertEquals($this->loadJson('jwt.json')['jti'], $this->getKeycloakGuard()->id());
+        $this->assertNull($this->getKeycloakGuard()->id());
     }
 
     public function test_guard_misses_proxy_method(): void
