@@ -23,6 +23,7 @@ class GuardLoader
     public static function forceReload(): void
     {
         self::$guard = null;
+        self::$loaded = [];
     }
 
     public static function load(array $config): ProxyGuard
