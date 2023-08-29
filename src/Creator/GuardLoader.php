@@ -20,6 +20,11 @@ class GuardLoader
     private static ?ProxyGuard $guard = null;
     private static ?Request $request = null;
 
+    public static function forceReload(): void
+    {
+        self::$guard = null;
+    }
+
     public static function load(array $config): ProxyGuard
     {
         self::$request = $config['request'];
